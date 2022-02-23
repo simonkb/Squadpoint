@@ -1,0 +1,22 @@
+{% extends "squadpoint/layout.html" %}
+{% block body %} 
+ {% if notifications.count > 0 %}
+ <div id='notifications'>
+     {% for notification in notifications%}
+     <div>
+         <P>notification.message</P>
+     </div>
+     {%endfor%}
+
+</div>
+
+ {%else %}
+ <h4>You have no notifications</h4>
+ {%endif %}
+{% block script %}
+<script type='text/javascript'>
+    
+
+</script>
+{%endblock %}
+{% endblock%}

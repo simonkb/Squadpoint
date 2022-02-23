@@ -1,0 +1,45 @@
+{% extends "squadpoint/layout.html" %}
+{% block body %}
+<div id="sport_zone_view">
+    <h2>{{sportZone.name}}</h2>
+    <div id="first-half-view" style="padding:40px; font-size: 20px;">
+        <h3>Our courts</h3>
+        <ol>
+            {%if user.is_authenticated%}
+            {% for sport in sportZone.sport_courts.all %}
+            <li>
+                <a href="{% url 'sport_court' sport.id %}">
+                    <div>
+                        {{sport.name}}
+                    </div>
+                </a>
+            </li>
+            {% endfor %}
+            {%else%}
+            {% for sport in sportZone.sport_courts.all %}
+            <li>
+                <a href="{% url 'login'%}">
+                    <div>
+                        {{sport.name}}
+                    </div>
+                </a>
+            </li>
+            {% endfor %}
+            {%endif%}
+        </ol>
+        <div>
+            <h5>Location</h5>
+            <h6>City: {{sportZone.location.city}}</h6>
+            <h6>Area: {{sportZone.location.subcity}}</h6>
+
+        </div>
+    </div>
+    <div id="second-half-view">
+        <img style="width: 600px; height:300px;"
+            src="https://racketinsight.com/wp-content/uploads/2021/06/What-is-Table-Tennis-Featured-Image-1024x536.jpg"
+            alt="Images">
+    </div>
+    <a href="{% url 'index' %}">Back</a>
+
+</div>
+{% endblock %}

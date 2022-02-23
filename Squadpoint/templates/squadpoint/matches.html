@@ -1,0 +1,158 @@
+{% extends "squadpoint/layout.html" %}
+{% block body %}
+<div id='matches'>
+    <Strong>All Upcoming matches</Strong>
+    <div id='upcoming-matches'>
+    </div>
+    <Strong>All Past matches</Strong>
+    <div id='past-matches'>
+    </div>
+</div>
+{%if user.is_authenticated%}
+<h6 id="isLoggedIn" style="display: none;">true</h6>
+{%else%}
+<h6 id="isLoggedIn" style="display: none;">false</h6>
+{%endif%}
+{% block script%}
+<script type="text/javascript">
+    var a = 0;
+    document.addEventListener("DOMContentLoaded", function () {
+        let upcomming_matches_Div = document.querySelector("#upcoming-matches");
+        let past_matches_Div = document.querySelector("#past-matches");
+        past_matches_Div.innerHTML = "";
+        upcomming_matches_Div.innerHTML = "";
+        const today_const = new Date();
+        if (a < 1) {
+            fetch("/matches")
+                .then(response => response.json())
+                .then(matches => {
+                    for (const match of matches) {
+                        let d1 = new Date(match["starts"].substring(1, 17))
+                        let starts = new Date(d1.getTime() + (4 * 60 * 60 * 1000))
+                        let ends = new Date(starts.getTime() + (30 * 60 * 1000))
+                        let match_div = document.createElement("div");
+                        match_div.className = "your-booking";
+                        if (starts.getTime() > today_const.getTime()) {
+                            match_div.innerHTML = `Matches of ${match['sport_court']} in ${match['sport_zone']} starts at ${starts.toLocaleTimeString()} on ${match['date']}`
+                            upcomming_matches_Div.appendChild(match_div);
+                            let big_overlay = document.createElement("div");
+                            big_overlay.className = "big_overlay";
+                            big_overlay.id = "big_overlay_march";
+                            let overlay = document.createElement("div");
+                            big_overlay.appendChild(overlay);
+                            overlay.className = "overlay";
+                            //Implimenting the contents of the overlay
+                            let h2 = document.createElement("h2");
+                            h2.innerHTML = "Join the match";
+                            overlay.appendChild(h2);
+                            let h4 = document.createElement("h4");
+                            overlay.appendChild(h4);
+                            h4.innerHTML = `<hr>From ${starts.toLocaleString()}<br>To ${ends.toLocaleString()}<hr>`
+                            //Implimenting the radio buttons
+                            const teams = ['A', 'B'];
+                            // generate the radio groups
+                            const group = document.createElement('group');
+                            group.id = "group";
+                            let radioGroupDiv_1 = document.createElement('div');
+                            let radioInput_1 = document.createElement('input');
+                            radioInput_1.type = 'radio';
+                            radioInput_1.name = "team";
+                            radioInput_1.value = teams[0];
+                            radioInput_1.id = teams[0];
+                            let radio_label_1 = document.createElement('label');
+                            radio_label_1.htmlFor = teams[0];
+                            radio_label_1.textContent = ` Join team ${teams[0]}`;
+                            radioGroupDiv_1.appendChild(radioInput_1);
+                            radioGroupDiv_1.appendChild(radio_label_1);
+                            group.appendChild(radioGroupDiv_1);
+                            let radioGroupDiv_2 = document.createElement('div');
+                            let radioInput_2 = document.createElement('input');
+                            radioInput_2.type = 'radio';
+                            radioInput_2.name = "team";
+                            radioInput_2.value = teams[1];
+                            radioInput_2.id = teams[1];
+                            let radio_label_2 = document.createElement('label');
+                            radio_label_2.htmlFor = teams[1];
+                            radio_label_2.textContent = ` Join team ${teams[1]}`;
+                            radioGroupDiv_2.appendChild(radioInput_2);
+                            radioGroupDiv_2.appendChild(radio_label_2);
+                            group.appendChild(radioGroupDiv_2);
+                            const radioButtons = [radioInput_1, radioInput_2];
+                            for (const radioButton of radioButtons) {
+                                radioButton.addEventListener('change', showSelected);
+                            }
+                            let output = document.createElement('h6');
+                            overlay.appendChild(group);
+                            overlay.appendChild(output);
+                            var selected_team;
+                            function showSelected(e) {
+                                if (this.checked) {
+                                    output.innerHTML = `You will join team ${this.value}.`;
+                                    selected_team = this.value;
+                                }
+                            }
+
+                            //
+                            let joinOrCancelDiv = document.createElement("div");
+                            joinOrCancelDiv.className = "save-or-cancel";
+                            let joinbtn = document.createElement("a");
+                            joinbtn.className = "btn btn-outline-primary";
+                            joinbtn.textContent = "Join Match";
+                            joinbtn.addEventListener("click", function () {
+                                if (`{{user.is_authenticated}}`) {
+                                    if (output.innerHTML != "" && output.innerHTML != "Please select the team.") {
+                                        fetch(`/join_match/${match["id"]}`, {
+                                            method: 'PUT',
+                                            body: JSON.stringify({
+                                                selected_team: selected_team
+                                            })
+                                        })
+                                        alert("Done!");
+                                        off();
+                                    } else {
+                                        output.innerHTML = "Please select the team."
+                                    }
+                                }
+                            })
+
+                            let cancelbtn = document.createElement("a");
+                            cancelbtn.className = "btn btn-outline-danger"
+                            cancelbtn.textContent = "Cancel";
+                            cancelbtn.style.marginLeft = "10px"
+                            joinOrCancelDiv.appendChild(joinbtn);
+                            joinOrCancelDiv.appendChild(cancelbtn);
+                            overlay.appendChild(joinOrCancelDiv);
+                            cancelbtn.addEventListener("click", function () {
+                                off();
+                            })
+                            function on() {
+                                big_overlay.style.display = "block";
+                            }
+                            function off() {
+                                big_overlay.style.display = "none";
+                            }
+                            //
+                            match_div.addEventListener("click", function () {
+                                var isLoggedIn = document.querySelector("#isLoggedIn").textContent;
+                                if (isLoggedIn==="true") {
+                                    document.querySelector("#matches").appendChild(big_overlay);
+                                    on();
+                                }
+                                else {
+                                    window.location = 'http://127.0.0.1:8000/login';
+                                }
+                            });
+
+                        } else {
+                            match_div.innerHTML = `Match of ${match['sport_court']} in ${match['sport_zone']} started at ${starts.toLocaleTimeString()} on ${match['date']}`
+                            past_matches_Div.appendChild(match_div);
+                        }
+                    }
+                });
+            a++
+        }
+    });
+    a = 0;
+</script>
+{% endblock%}
+{% endblock%}

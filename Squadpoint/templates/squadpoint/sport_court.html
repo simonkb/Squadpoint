@@ -1,0 +1,200 @@
+{% extends "squadpoint/layout.html" %}
+
+{% block body %}
+<div>
+    <h2>{{sport_court.sport_zone.name}} > {{sport_court.name}}</h2>
+</div>
+<div id="book-court">
+    <div id="date-picker">
+        <div id="time-picker"
+            style="overflow-y: scroll; height:700px;margin: 20px;">
+            <table class="table table-bordered table-dark">
+                <thead>
+                    <tr>
+                        <td colspan="8">
+                            <div style="text-align:center;">
+                                <i><a id="previous_week" href="">Previous Week << </a></i>
+                                <i><a id="current_week" href="">Current Week</a></i>
+                                <i><a id="next_week" href=""> >> Next Week</a></i>
+                            </div>
+                        </td>
+                    </tr>
+                </thead>
+                <thead>
+                    <tr id='column-field-new'>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% block script%}
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const today_const = new Date();
+        let today = new Date();
+        let previous_week = document.querySelector("#previous_week");
+        let current_week = document.querySelector("#current_week");
+        let next_week = document.querySelector("#next_week");
+        displayTable(today);
+    })
+    var a = 0;
+    let booking_times_ = []
+        fetch(`/book/{{sport_court.id}}`)
+            .then(response => response.json())
+            .then(bookings => {
+                for (const booking of bookings) {
+                    let d1 = new Date(booking["starts"].substring(1, 17))
+                    let d2 = new Date(d1.getTime() + (4 * 60 * 60 * 1000))
+                    booking_times_.push(d2.toLocaleString())
+
+                }
+            })
+    function is_booked(start_time) {
+        let bool = false;
+        for (let c = 0; c < 5; c++) {
+            if (start_time == booking_times_[c]) {
+                bool = true;
+
+            }
+        }
+        return bool;
+    }
+    function displayTable(start_date) {
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let column_row = document.querySelector("#column-field-new");
+        let row = document.querySelector("#row-field");
+        let today_new = new Date(start_date.getTime());
+        if (a < 1) {
+            for (let i = 0; i < 8; i++) {
+                let column_cell = document.createElement("th")
+                column_cell.scope = "col";
+                if (i === 0) {
+                    column_cell.innerHTML = "Start Time";
+                } else {
+                    let string1 = start_date.toLocaleString();
+                    let string_array1 = string1.split(", ");
+                    var today_constant = new Date();
+                    if (start_date.getDay() === today_constant.getDay()) {
+                        column_cell.innerHTML = `Today(${days[start_date.getDay()].substring(0, 3)})<br>${string_array1[0]}`;
+
+                    } else {
+                        column_cell.innerHTML = `${days[start_date.getDay()]}<br>${string_array1[0]}`;
+
+                    }
+                    var tomorrow = new Date(start_date.getTime() + (24 * 60 * 60 * 1000));
+                    start_date = tomorrow;
+                }
+                column_row.append(column_cell);
+            }
+
+            let table_body = document.querySelector("#table-body");
+            let start_time = new Date(today_new.getTime());
+            let newString = start_time.toLocaleString().split(", ");
+            start_time = new Date(newString[0] + ", 08:00:00 AM")
+            for (let i = 0; i < 29; i++) {
+                let tr = document.createElement("tr");
+                let th = document.createElement("th");
+                th.scope = "row";
+                let string_ = start_time.toLocaleString();
+                let string_array_ = string_.split(", ");
+                th.innerHTML = string_array_[1];
+                tr.appendChild(th);
+                let start_time_new = start_time;
+                for (let j = 0; j < 7; j++) {
+                    let td = document.createElement("td");
+                    let string = start_time_new.toLocaleString();
+                    let string_array = string.split(", ");
+                    td.innerHTML = start_time_new.toLocaleString();
+                    tr.appendChild(td);
+                    var today_constant_ = new Date();
+                    if (is_booked(string)) {
+                        td.className = "btn-danger"
+
+                    } else {
+                        td.className = "btn-light"
+
+                    }
+                    if (start_time.getTime() > today_constant_.getTime() + (30 * 60 * 1000) || today_constant_.getDate() != start_time_new.getDate()) {
+                        let big_overlay = document.createElement("div")
+                        big_overlay.className = "big_overlay";
+                        let overlay = document.createElement("div");
+                        big_overlay.appendChild(overlay);
+                        overlay.className = "overlay";
+                        let h2 = document.createElement("h2");
+                        h2.innerHTML = "Book {{sport_court.name}} Court"
+                        overlay.appendChild(h2)
+                        let h4 = document.createElement("h4");
+                        overlay.appendChild(h4)
+                        let to = new Date(start_time_new.getTime() + (30 * 60 * 1000))
+                        let booking_start = new Date(start_time_new.getTime());
+
+                        h4.innerHTML = `<hr>30 minutes <br>From ${start_time_new.toLocaleString()}<br>To ${to.toLocaleString()}<br><hr>`
+                        let select = document.createElement('select')
+                        let option = document.createElement('option')
+                        option.textContent = 'Add participants from your friends'
+                        select.className = 'btn btn-outline-secondary'
+                        select.appendChild(option)
+                        overlay.appendChild(select)
+                        let saveOrCancelDiv = document.createElement("div");
+                        saveOrCancelDiv.className = "save-or-cancel"
+                        let savebtn = document.createElement("a");
+                        savebtn.className = "btn btn-outline-primary"
+                        savebtn.textContent = "Save";
+                        savebtn.addEventListener("click", function () {
+                            fetch(`/book/{{sport_court.id}}`, {
+                                method: 'PUT',
+                                body: JSON.stringify({
+                                    starts: booking_start.toJSON(),
+                                    ends: to.toJSON(),
+                                })
+                            })
+                            alert("Done!");
+                            off();
+                            td.className = "btn-danger"
+                        })
+                        let cancelbtn = document.createElement("a");
+                        cancelbtn.className = "btn btn-outline-danger"
+                        cancelbtn.textContent = "Cancel";
+                        cancelbtn.style.marginLeft = "10px"
+                        saveOrCancelDiv.appendChild(savebtn);
+                        saveOrCancelDiv.appendChild(cancelbtn);
+                        overlay.appendChild(saveOrCancelDiv);
+                        cancelbtn.addEventListener("click", function () {
+                            off();
+
+                        })
+                        function on() {
+                            big_overlay.style.display = "block";
+                        }
+                        function off() {
+                            big_overlay.style.display = "none";
+                        }
+                        td.addEventListener("click", function () {
+
+                            document.querySelector("#date-picker").appendChild(big_overlay);
+                            on();
+
+                        })
+                    } else {
+                        td.className = "btn-danger"
+                    }
+                    start_time_new = new Date(start_time_new.getTime() + (24 * 60 * 60 * 1000));
+                }
+                table_body.appendChild(tr);
+                start_time = new Date(start_time.getTime() + (30 * 60 * 1000));
+            }
+            a++;
+        }
+    }
+
+    a = 0;
+
+</script>
+{% endblock%}
+{% endblock%}

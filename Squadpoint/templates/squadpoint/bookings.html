@@ -1,0 +1,129 @@
+{% extends "squadpoint/layout.html" %}
+{% block body %}
+<div id='bookings'>
+    <Strong>Your Upcoming bookings</Strong>
+    <div id='up-coming-bookings'>
+    </div>
+    <Strong>All Your Past Bookings</Strong>
+    <div id='past-bookings'>
+    </div>
+</div>
+{% block script %}
+<script type="text/javascript">
+    let b = 0;
+    document.addEventListener("DOMContentLoaded", function () {
+        if (b < 1) {
+            let upCommingBookingsDiv = document.querySelector("#up-coming-bookings");
+            let past_bookingsDiv = document.querySelector("#past-bookings");
+            past_bookingsDiv.innerHTML = ""
+            upCommingBookingsDiv.innerHTML = ""
+            const today_const = new Date();
+            fetch(`/bookings/{{user.id}}`)
+                .then(response => response.json())
+                .then(bookings => {
+                    for (const booking of bookings) {
+                        let d1 = new Date(booking["starts"].substring(1, 17))
+                        let starts = new Date(d1.getTime() + (4 * 60 * 60 * 1000))
+                        let ends = new Date(starts.getTime() + (30 * 60 * 1000))
+                        let bookingDiv = document.createElement("div");
+                        bookingDiv.className = "your-booking"
+                        if (starts.getTime() > today_const.getTime()) {
+                            bookingDiv.innerHTML = `Booking of ${booking['sport_court']} in ${booking['sport_zone']} starts at ${starts.toLocaleTimeString()} on ${booking['date']}`
+                            upCommingBookingsDiv.appendChild(bookingDiv);
+                            //Implementing overlay
+                            let big_overlay = document.createElement("div")
+                            big_overlay.className = "big_overlay";
+                            let overlay = document.createElement("div");
+                            big_overlay.appendChild(overlay);
+                            overlay.className = "overlay";
+                            //Implimenting the contents of the overlay
+                            let h2 = document.createElement("h2");
+                            h2.innerHTML = "Create a match"
+                            overlay.appendChild(h2)
+                            let h4 = document.createElement("h4");
+                            overlay.appendChild(h4)
+                            h4.innerHTML = `<hr>30 minutes <br>From ${starts.toLocaleString()}<br>To ${ends.toLocaleString()}<hr>`
+                            let select = document.createElement('select')
+                            let option = document.createElement('option')
+                            option.textContent = 'Number of Contestents';
+                            select.className = 'btn btn-outline-secondary';
+                            select.appendChild(option)
+                            let option1 = document.createElement('option')
+                            option1.textContent = '2';
+                            option1.value = 2;
+                            select.appendChild(option1)
+                            let option2 = document.createElement('option')
+                            option2.textContent = '4';
+                            option2.value = 4;
+                            select.appendChild(option2)
+                            overlay.appendChild(select)
+                            let checkboxDiv = document.createElement('div')
+                            checkboxDiv.className = 'form-check'
+                            let checkboxInput = document.createElement('input')
+                            checkboxInput.type ="checkbox"
+                            checkboxInput.className = "form-check-input"
+                            checkboxInput.id = "flexCheckDefault"
+                            checkboxDiv.appendChild(checkboxInput)
+                            let checkboxLabel = document.createElement('label')
+                            checkboxLabel.className = "form-check-label"
+                            checkboxLabel.htmlFor = "flexCheckDefault"
+                            checkboxLabel.textContent = "Do you want to join the match?"
+                            checkboxDiv.appendChild(checkboxLabel)
+                            overlay.appendChild(checkboxDiv)
+
+                            let saveOrCancelDiv = document.createElement("div");
+                            saveOrCancelDiv.className = "save-or-cancel";
+                            let savebtn = document.createElement("a");
+                            savebtn.className = "btn btn-outline-primary";
+                            savebtn.textContent = "Save";
+                            savebtn.addEventListener("click", function () {
+                                let join = checkboxInput.checked;
+                                fetch(`/create_match/${booking["id"]}`, {
+                                    method: 'PUT',
+                                    body: JSON.stringify({
+                                        m_starts: starts.toJSON(),
+                                        m_ends: ends.toJSON(),
+                                        numberParticipants: select.value,
+                                        join: join,
+                                    })
+                                })
+                                alert("Done!");
+                                off();
+                            })
+                            let cancelbtn = document.createElement("a");
+                            cancelbtn.className = "btn btn-outline-danger"
+                            cancelbtn.textContent = "Cancel";
+                            cancelbtn.style.marginLeft = "10px"
+                            saveOrCancelDiv.appendChild(savebtn);
+                            saveOrCancelDiv.appendChild(cancelbtn);
+                            overlay.appendChild(saveOrCancelDiv);
+                            cancelbtn.addEventListener("click", function () {
+                                off();
+
+                            })
+                            function on() {
+                                big_overlay.style.display = "block";
+                            }
+                            function off() {
+                                big_overlay.style.display = "none";
+                            }
+                            //
+                            bookingDiv.addEventListener("click", function () {
+                                document.querySelector("#bookings").appendChild(big_overlay);
+                                on();
+                            });
+
+                        } else {
+                            bookingDiv.innerHTML = `Booking of ${booking['sport_court']} in ${booking['sport_zone']} started at ${starts.toLocaleTimeString()} on ${booking['date']}`
+                            past_bookingsDiv.appendChild(bookingDiv);
+                        }
+
+                    }
+                })
+            b++;
+        }
+        b = 0;
+    });
+</script>
+{% endblock%}
+{% endblock%}

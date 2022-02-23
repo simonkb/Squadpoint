@@ -1,0 +1,38 @@
+{% extends "squadpoint/layout.html" %}
+{% block body %}
+
+<div id='body'>
+    <div id='home'>
+        <div>
+            <form class="form-inline my-2 my-lg-0">
+                <input id='search' class="form-control mr-sm-2" type="search" placeholder="Search">
+                <button class="btn btn-outline-primary my-2 my-sm-0" type="button" id="searchbtn">Search</button>
+                <button class="btn btn-outline-secondary my-2 my-sm-0" type="button" id="allbtn">All Sport Zones</button>
+            </form>
+        </div>
+        <div id='home-slide-show'>
+            <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img class="d-block w-100" src="https://miro.medium.com/max/5000/1*9JdIsCt4tZKgVz7QTTRftw.jpeg"
+                            alt="First slide">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>We are located in Asharej</h5>
+                            <p><a href="http://127.0.0.1:8000/sport_zone/1">Click here</a> to access the details.</p>
+                        </div>
+                    </div>
+                </div>
+                <a class="carousel-control-prev" href="#" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

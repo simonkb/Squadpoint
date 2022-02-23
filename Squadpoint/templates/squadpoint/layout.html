@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>{% block title %}Squadpoint{% endblock %}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="{% static 'squadpoint/capstone.js' %}"></script>
+    <style>
+        #bookings,
+        #matches {
+            padding: auto;
+            margin: 20px;
+        }
+        .your-booking {
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid rgba(141, 140, 140, 0.609);
+            width: 70%;
+            border-radius: 15px;
+        }
+
+        .save-or-cancel {
+            padding: 6px 8px 0 8px;
+            text-align: right;
+        }
+        #big_overlay_march{
+            height: 130%;
+
+        }
+        .big_overlay {
+            position: absolute;
+            display: none;
+            width: 100%;
+            height: 169%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.562);
+            z-index: 2;
+        }
+
+        .overlay {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(20, 20, 20, 0.616);
+            position: absolute;
+            margin: 15%;
+            width: 60%;
+            height: 40%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgb(3, 3, 19);
+            z-index: 2;
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        #sport_zone_view {
+            margin: 30px;
+            padding: auto;
+        }
+
+        #image-view {
+            width: 60%;
+            height: 60%;
+        }
+
+
+        #first-half-view,
+        #second-half-view {
+            display: table-cell;
+            margin: 30px;
+            width: 88%;
+        }
+
+        .div-elment {
+            border-radius: 10px;
+            border: solid 1px #EBEDEF;
+            background-color: #F4F6F6;
+            margin: 20px;
+            padding: 10px;
+        }
+
+        #allbtn {
+            margin-left: 20px;
+        }
+
+        .form-select {
+            margin-left: 20px;
+        }
+
+        img {
+            border-radius: 15px;
+        }
+
+        #carouselExampleControls {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(17, 17, 17, 0.616);
+            width: 50%;
+            height: 30%;
+            margin-left: 25%;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        #search {
+            width: 40%;
+            margin: 20px;
+        }
+        .form-div {
+            margin: 20px;
+        }
+
+        .form-group {
+            width: 600px;
+        }
+
+        body {
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        footer {
+            min-height: 50px;
+            margin-top: auto;
+            background-color: #455645;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(17, 17, 17, 0.616);
+
+        }
+        #header_view {
+            background-color: #455645;
+            color: white;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(17, 17, 17, 0.616);
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+    </style>
+    {% if user.is_authenticated %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector("#profile-link").href = 'http://127.0.0.1:8000/page/profile'; 
+            document.querySelector("#your-bookings-link").href = 'http://127.0.0.1:8000/page/bookings';
+            document.querySelector("#notifications-link").href = 'http://127.0.0.1:8000/page/notifications';
+
+        })
+    </script>
+    {% endif%}
+</head>
+<body>
+    <div>
+        <nav id="header_view" class="navbar navbar-expand-lg">
+            <a class="navbar-brand" id='home-link' href="#" style="font-size: 25px; font-weight: bold; color:white;"> <i style="font-size:30px" class="glyphicon glyphicon-home"></i>   Squadpoint
+            </a>
+            <div>
+                <ul class="navbar-nav mr-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" id='profile-link' href="#"><strong><i class="glyphicon glyphicon-user"></i></strong></a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" id='matches-link' href="#">All Matches</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" id='your-bookings-link' href="#">Your Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id='notifications-link' href="#">Notifications</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Sign Up</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" id="about-link" href="">About</a>
+                    </li>
+                </ul>
+
+            </div>
+        </nav>
+    </div>
+    <div class="body">
+        {% block body %}
+        {% endblock %}
+    </div>
+    <footer>
+        <a href="https://mail.google.com/mail/u/0/#inbox?compose=new">Contact us </a>via simonkebede12@gmail.com
+        <h6><a href="https://mail.google.com/mail/u/0/#inbox?compose=new">Click here</a> to join as a sport zone owner.
+        </h6>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+{% extends "squadpoint/layout.html" %}
+{% block body %}
+<div id="search_results_view">
+    {% if empty %}
+    <h6 style="text-align: center;">{{error}}</h6>
+    <hr>
+    {%else%}
+    <h2>Search Results for {{query}}</h2>
+    <hr>
+    
+    {%for sport_zone in sport_zones %}
+    <a href="{% url 'sport_zone' sport_zone.id %}">
+        <div class="div-elment">
+            <h5>{{sport_zone.name}}</h5>
+            <h6>{{sport_zone.city}}</h6>
+
+        </div>
+    </a>
+    {%endfor%}
+    {%endif%}
+</div>
+
+{% endblock%}
