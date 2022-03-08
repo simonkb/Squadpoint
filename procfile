@@ -1,0 +1,1 @@
+web: gunicorn CAPSTONE.wsgi --log-file -
