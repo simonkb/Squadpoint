@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-    document.querySelector("#home-link").href = 'http://127.0.0.1:8000/'
-    document.querySelector("#matches-link").href = 'http://127.0.0.1:8000/page/matches';
-    document.querySelector("#about-link").href = 'http://127.0.0.1:8000/page/about';
+    document.querySelector("#home-link").href = 'https://squadpoint.herokuapp.com'
+    document.querySelector("#matches-link").href = 'https://squadpoint.herokuapp.com';
+    document.querySelector("#about-link").href = 'https://squadpoint.herokuapp.com';
 
     load_view("home");
 })
@@ -18,12 +18,12 @@ function load_view(view) {
         document.querySelector("#searchbtn").addEventListener("click", function () {
             let query = document.querySelector("#search").value;
             if (query.length > 0) {
-                window.location = `http://127.0.0.1:8000/search/${query}`;
+                window.location = `https://squadpoint.herokuapp.com/search/${query}`;
             }
         })
         document.querySelector("#allbtn").addEventListener("click", function () {
             let query = "all";
-            window.location = `http://127.0.0.1:8000/search/${query}`;
+            window.location = `https://squadpoint.herokuapp.com/search/${query}`;
             })
     }
 }
