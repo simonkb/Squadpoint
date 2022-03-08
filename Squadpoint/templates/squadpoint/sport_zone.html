@@ -5,7 +5,7 @@
     <div id="first-half-view" style="padding:40px; font-size: 20px;">
         <h3>Our courts</h3>
         <ol>
-            {%if user.is_authenticated%}
+            {% if user.is_authenticated %}
             {% for sport in sportZone.sport_courts.all %}
             <li>
                 <a href="{% url 'sport_court' sport.id %}">

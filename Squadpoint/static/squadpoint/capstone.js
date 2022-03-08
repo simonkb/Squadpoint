@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelector("#home-link").href = 'https://squadpoint.herokuapp.com'
-    document.querySelector("#matches-link").href = 'https://squadpoint.herokuapp.com';
-    document.querySelector("#about-link").href = 'https://squadpoint.herokuapp.com';
+    document.querySelector("#matches-link").href = 'https://squadpoint.herokuapp.com/page/matches';
+    document.querySelector("#about-link").href = 'https://squadpoint.herokuapp.com/page/about';
 
     load_view("home");
 })
